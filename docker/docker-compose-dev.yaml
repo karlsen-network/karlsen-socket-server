@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  kaspa_explorer:
-    container_name: kaspa_explorer
-    image: supertypo/kaspa-explorer:latest
+  karlsen_explorer:
+    container_name: karlsen_explorer
+    image: karlsennetwork/karlsen-explorer:latest
     restart: unless-stopped
     environment:
       API_URI: "http://localhost:8000"
@@ -11,8 +11,8 @@ services:
     ports:
       - "8080:8080/tcp"
 
-  kaspa_rest_server:
-    container_name: kaspa_rest_server
+  karlsen_rest_server:
+    container_name: karlsen_rest_server
     build:
       context: ../
       dockerfile: docker/Dockerfile.dev
@@ -21,24 +21,24 @@ services:
     volumes:
       - "../:/app"
     environment:
-      KASPAD_HOST_1: kaspad:16110
+      KARLSEND_HOST_1: karlsend:42110
       SQL_URI: postgresql+asyncpg://postgres:postgres@postgresql:5432/postgres
     ports:
       - "8000:8000/tcp"
     links:
-      - kaspad
+      - karlsend
       - postgresql
 
-  kaspa_db_filler:
-    container_name: kaspa_db_filler
-    image: supertypo/kaspa-db-filler:latest
+  karlsen_db_filler:
+    container_name: karlsen_db_filler
+    image: karlsennetwork/karlsen-db-filler:latest
     restart: unless-stopped
     environment:
       DEBUG: "true"
-      KASPAD_HOST_1: kaspad:16110
+      KARLSEND_HOST_1: karlsend:42110
       SQL_URI: postgresql://postgres:postgres@postgresql:5432/postgres
     links:
-      - kaspad
+      - karlsend
       - postgresql
 
   postgresql:
@@ -54,17 +54,17 @@ services:
     volumes:
       - postgresql:/var/lib/postgresql/data/
 
-  kaspad:
-    container_name: kaspad
-    image: supertypo/kaspad:latest
+  karlsend:
+    container_name: karlsend
+    image: karlsennetwork/karlsend:latest
     restart: unless-stopped
     ports:
-      - "16110:16110/tcp"
-      - "16111:16111/tcp"
+      - "42110:42110/tcp"
+      - "42111:42111/tcp"
     volumes:
-      - kaspad:/app/data/
-    command: kaspad --utxoindex --connect=kdxweb.kaspacalc.net
+      - karlsend:/app/data/
+    command: karlsend --utxoindex --connect=mainnet-dnsseed-1.karlsencoin.com
 
 volumes:
   postgresql:
-  kaspad:
+  karlsend:
